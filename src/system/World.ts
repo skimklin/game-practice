@@ -2,7 +2,7 @@ interface WorldOptions {
   root: HTMLElement
 }
 
-class World {
+export class GameWorld {
   constructor(private readonly options: WorldOptions) {}
 
   private init() {}

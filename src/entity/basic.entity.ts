@@ -1,1 +1,1 @@
-class BasicEntity {}
+export class BasicEntity {}

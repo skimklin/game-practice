@@ -1,1 +1,1 @@
-class BasicComponent {}
+export class BasicComponent {}
