@@ -1,7 +1,7 @@
 import { BasicComponent } from './basic.comp'
 
 export class BackgroundComponent extends BasicComponent {
-  static readonly type = 'background'
+  static readonly type = 'Background'
   type = BackgroundComponent.type
 
   url: string

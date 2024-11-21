@@ -26,9 +26,11 @@ export class EntityManager {
   }
 
   public getComponentsByType<T extends BasicComponent>(type: T['type']) {
-    console.log(this.entities, type)
-    return Object.values(this.entities)
-      .map((entity) => entity[type])
-      .filter(Boolean) as T[]
+    const comps: T[] = []
+    Object.values(this.entities).forEach(
+      (entity) => entity[type] && comps.push(entity[type] as T)
+    )
+
+    return comps
   }
 }

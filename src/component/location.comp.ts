@@ -1,7 +1,7 @@
 import { BasicComponent } from './basic.comp'
 
 export class LocationComponent extends BasicComponent {
-  static readonly type = 'location'
+  static readonly type = 'Location'
 
   mountEl?: HTMLElement
 
