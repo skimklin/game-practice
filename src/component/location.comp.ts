@@ -2,10 +2,9 @@ import { BasicComponent } from './basic.comp'
 
 export class LocationComponent extends BasicComponent {
   static readonly type = 'Location'
+  readonly type = LocationComponent.type
 
   mountEl?: HTMLElement
-
-  type = LocationComponent.type
 
   x: number
   height: number

@@ -33,4 +33,15 @@ export class EntityManager {
 
     return comps
   }
+
+  public getEntityWhoHasMultipleTypes<E extends Entity>(types: string[]) {
+    const entities: { uuid: string; entity: E }[] = []
+    Object.keys(this.entities).forEach((id) => {
+      if (types.every((type) => this.entities[id][type])) {
+        entities.push({ uuid: id, entity: this.entities[id] as E })
+      }
+    })
+
+    return entities
+  }
 }

@@ -1,7 +1,7 @@
 import { Entity } from '@/entity/EntityManager'
 
 export abstract class BasicComponent {
-  abstract type: string
+  abstract readonly type: string
 
   uuid!: string
 

@@ -1,4 +1,5 @@
 import {
+  ARROW_ACTIONS,
   KeyboardInputComponent,
   USER_ACTION,
 } from '@/component/keyboardInput.comp'
@@ -21,28 +22,42 @@ export class KeyboardEventManager {
     )?.[0]!
   }
 
-  public keyboardHandler = (e: KeyboardEvent) => {
+  public keyboardPressHandler = (e: KeyboardEvent) => {}
+  public keyCancelHandler = (e: KeyboardEvent) => {
+    // console.log(e.key)
     if (!allowKeys.includes(e.key as any)) {
       return
     }
-    this.updateKeyStatus(e.key as USER_ACTION)
-  }
-  public keyCancelHandler = (e: KeyboardEvent) => {
-    this.updateKeyStatus(null)
+    console.log(e.key)
+    this.updateKeyStatus(e.key as USER_ACTION, false)
   }
 
-  public updateKeyStatus(key: USER_ACTION | null) {
-    console.log(key, this.keyComponent)
-    this.keyComponent.currentKey = key
+  public updateKeyStatus(key: USER_ACTION, status: boolean) {
+    this.keyComponent.keyStatus[key] = status
+    if (ARROW_ACTIONS.includes(key)) {
+      ARROW_ACTIONS.forEach((k) => {
+        if (k === key) return
+        this.keyComponent.keyStatus[k] = false
+      })
+    }
+  }
+
+  public keyboardDownHandler = (e: KeyboardEvent) => {
+    if (!allowKeys.includes(e.key as any)) {
+      return
+    }
+    this.updateKeyStatus(e.key as USER_ACTION, true)
   }
 
   public listenInput() {
-    document.addEventListener('keydown', this.keyboardHandler)
+    // document.addEventListener('keypress', this.keyboardPressHandler)
+    document.addEventListener('keydown', this.keyboardDownHandler)
     document.addEventListener('keyup', this.keyCancelHandler)
   }
 
   public unmount() {
-    document.removeEventListener('keydown', this.keyboardHandler)
+    // document.removeEventListener('keypress', this.keyboardPressHandler)
+    document.removeEventListener('keydown', this.keyboardDownHandler)
     document.removeEventListener('keyup', this.keyCancelHandler)
   }
 }

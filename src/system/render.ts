@@ -35,29 +35,26 @@ export class GameRenderer {
 
     const mounted = !!location.mountEl
     const div = location.mountEl || document.createElement('div')
+    if (!mounted) {
+      div.className = characterClass
+      div.style.width = `${location.width}px`
+      div.style.height = `${location.height}px`
+    }
     const movement = mounted
       ? (entityManager.getEntityById(location.uuid)?.[
           MovementComponent.type
         ] as MovementComponent)
       : null
 
-    if (!mounted) {
-      div.className = characterClass
-    } else if (
-      movement &&
-      !movement.disableMove &&
-      keyboardManager.keyComponent.currentKey?.startsWith('Arrow')
-    ) {
-      const { key, distance } = calcMovementTransform(
-        keyboardManager.keyComponent.currentKey,
-        movement.speed / 60
-      )
-      location[key] += distance
+    if (!mounted || movement?.nextFrameMovement) {
+      if (movement?.nextFrameMovement) {
+        location.x += movement?.nextFrameMovement?.x ?? 0
+        location.y += movement?.nextFrameMovement?.y ?? 0
+        movement.nextFrameMovement = {}
+      }
+      div.style.left = `${location.x}px`
+      div.style.top = `${location.y}px`
     }
-    div.style.left = `${location.x}px`
-    div.style.top = `${location.y}px`
-    div.style.width = `${location.width}px`
-    div.style.height = `${location.height}px`
 
     location.mountEl = div
 
@@ -67,17 +64,6 @@ export class GameRenderer {
       renderRoot.appendChild(div)
     }
   }
-}
-
-function calcMovementTransform(key: USER_ACTION, speed: number) {
-  return (
-    {
-      [USER_ACTION.UP]: { key: 'y', distance: -speed },
-      [USER_ACTION.DOWN]: { key: 'y', distance: speed },
-      [USER_ACTION.LEFT]: { key: 'x', distance: -speed },
-      [USER_ACTION.RIGHT]: { key: 'x', distance: speed },
-    } as Record<USER_ACTION, { key: 'x' | 'y'; distance: number }>
-  )[key]
 }
 
 function createContainer(

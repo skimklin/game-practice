@@ -2,9 +2,16 @@ import { BasicComponent } from './basic.comp'
 
 export class MovementComponent extends BasicComponent {
   static readonly type = 'Movement'
-  type = MovementComponent.type
+  readonly type = MovementComponent.type
+
   speed: number
   disableMove: boolean
+  jumping = false
+
+  nextFrameMovement: {
+    x?: number
+    y?: number
+  } = {}
 
   constructor(options: { speed: number; disableMove?: boolean }) {
     super()

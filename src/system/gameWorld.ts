@@ -4,6 +4,7 @@ import { LocationComponent } from '@/component/location.comp'
 import { BackgroundComponent } from '@/component/background.comp'
 import { MovementComponent } from '@/component/movement.comp'
 import { KeyboardEventManager } from './keyboardEventManager'
+import { GameMovementEngine } from './movementEngine'
 
 interface WorldOptions {
   root: HTMLElement
@@ -43,15 +44,16 @@ const initComponents = {
   ],
 } satisfies { characters: Entity[] }
 
-const FRAME_RENDER_GAP = 20
-
 export class GameWorld {
+  FRAME_PER_SECOND = 60
+
   render!: GameRenderer
   entityManager!: EntityManager
   gameEnd = false
   userId!: string
   lastRenderTimeStamp: number | null = null
   keyboardManager!: KeyboardEventManager
+  gameMovementEngine!: GameMovementEngine
 
   constructor(public readonly options: WorldOptions) {
     this.init()
@@ -59,6 +61,7 @@ export class GameWorld {
 
   public init() {
     this.entityManager = new EntityManager()
+    this.gameMovementEngine = new GameMovementEngine(this)
 
     Object.values(initComponents).forEach((entities) => {
       entities.forEach((entity) => {
@@ -67,7 +70,7 @@ export class GameWorld {
     })
 
     this.userId = this.entityManager.registerEntity({
-      movement: new MovementComponent({ speed: 200 }),
+      movement: new MovementComponent({ speed: 100 }),
       location: new LocationComponent({
         x: 300,
         y: 400,
@@ -86,17 +89,20 @@ export class GameWorld {
   public gameLoopSchedule = () => {
     if (
       (!this.lastRenderTimeStamp ||
-        Date.now() - this.lastRenderTimeStamp >= FRAME_RENDER_GAP) &&
+        Date.now() - this.lastRenderTimeStamp >=
+          1000 / this.FRAME_PER_SECOND) &&
       !this.gameEnd
     ) {
-      this.gameLoop()
+      this.gameFramePaint()
       this.lastRenderTimeStamp = Date.now()
     }
 
     requestAnimationFrame(this.gameLoopSchedule)
   }
 
-  public gameLoop() {
+  public gameFramePaint() {
+    this.gameMovementEngine.updateMovement()
+
     this.render.render()
   }
 }
