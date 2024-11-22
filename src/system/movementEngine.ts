@@ -14,7 +14,7 @@ export class GameMovementEngine {
   public updateMovement = () => {
     const { entityManager, keyboardManager } = this.world
     const entities =
-      entityManager.getEntityWhoHasMultipleTypes<EntityLocationAndMovement>([
+      entityManager.getEntityWhoHasTypes<EntityLocationAndMovement>([
         LocationComponent.type,
         MovementComponent.type,
       ])
