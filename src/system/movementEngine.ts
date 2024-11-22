@@ -24,11 +24,11 @@ export class GameMovementEngine {
         [LocationComponent.type]: location,
         [MovementComponent.type]: movement,
       } = entity.entity
-      if (
-        movement &&
-        !movement.disableMove &&
-        keyboardManager.keyComponent.keys.some((e) => e.startsWith('Arrow'))
-      ) {
+
+      const hasActiveArrowKeys = keyboardManager.keyComponent.keys.some((e) =>
+        e.startsWith('Arrow')
+      )
+      if (movement && !movement.disableMove && hasActiveArrowKeys) {
         const arrowKey = keyboardManager.keyComponent.keys.find((e) =>
           e.startsWith('Arrow')
         )!
