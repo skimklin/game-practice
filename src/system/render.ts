@@ -47,10 +47,17 @@ export class GameRenderer {
       : null
 
     if (!mounted || movement?.nextFrameMovement) {
-      if (movement?.nextFrameMovement) {
+      if (movement?.nextFrameMovement.x) {
         location.x += movement?.nextFrameMovement?.x ?? 0
-        location.y += movement?.nextFrameMovement?.y ?? 0
-        movement.nextFrameMovement = {}
+        movement.nextFrameMovement.x = 0
+      }
+      if (movement?.nextFrameMovement.y) {
+        const y = movement.nextFrameMovement.y
+        const yMovement = (Array.isArray(y) ? y.shift() : y) || 0
+        location.y += yMovement
+        if (!Array.isArray(y) || y.length === 0) {
+          movement.nextFrameMovement.y = 0
+        }
       }
       div.style.left = `${location.x}px`
       div.style.top = `${location.y}px`

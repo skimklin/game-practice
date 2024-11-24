@@ -8,6 +8,9 @@ type EntityLocationAndMovement = CombineType<
   [LocationComponent, MovementComponent]
 >
 
+const horizontalKeys = [USER_ACTION.LEFT, USER_ACTION.RIGHT]
+const verticalKeys = [USER_ACTION.UP, USER_ACTION.DOWN]
+
 export class GameMovementEngine {
   constructor(public readonly world: GameWorld) {}
 
@@ -18,6 +21,7 @@ export class GameMovementEngine {
         LocationComponent.type,
         MovementComponent.type,
       ])
+    const { keys } = keyboardManager.keyComponent
 
     entities.forEach((entity) => {
       const {
@@ -25,21 +29,44 @@ export class GameMovementEngine {
         [MovementComponent.type]: movement,
       } = entity.entity
 
-      const hasActiveArrowKeys = keyboardManager.keyComponent.keys.some((e) =>
-        e.startsWith('Arrow')
+      const hasHorizontalArrowKeys = keys.some((e) =>
+        horizontalKeys.includes(e)
       )
-      if (movement && !movement.disableMove && hasActiveArrowKeys) {
+      const hasVerticalArrowKeys = keys.some((e) => verticalKeys.includes(e))
+      if (movement && !movement.disableMove && hasHorizontalArrowKeys) {
         const arrowKey = keyboardManager.keyComponent.keys.find((e) =>
-          e.startsWith('Arrow')
+          horizontalKeys.includes(e)
         )!
-        const { key, distance } = calcMovementTransform(
+        const { distance } = calcMovementTransform(
           arrowKey,
           movement.speed / this.world.FRAME_PER_SECOND
         )
+        movement.nextFrameMovement.x = distance
+      }
 
-        movement.nextFrameMovement[key] = distance
+      if (hasVerticalArrowKeys) {
+        // TODO vertical movement
+      }
+
+      if (!movement.jumping && keys.includes(USER_ACTION.SPACE)) {
+        this.calcJumpTransform(movement)
+      }
+      if (
+        movement.jumping &&
+        (!Array.isArray(movement.nextFrameMovement.y) ||
+          !movement.nextFrameMovement.y.length)
+      ) {
+        movement.jumping = false
       }
     })
+  }
+
+  public calcJumpTransform = (movement: MovementComponent) => {
+    movement.nextFrameMovement.y = movement.jumpFrameCalc(
+      this.world.FRAME_PER_SECOND
+    )
+    movement.jumping = true
+    // console.log(movement)
   }
 }
 
